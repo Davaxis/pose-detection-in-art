@@ -46,8 +46,10 @@ model = torch.nn.DataParallel(model).cuda()
 model.float()
 model.eval()
 
-test_image = './readme/ski.jpg'
 for filename in os.listdir('pictures'):
+    if not (filename.endswith('.jpg') or filename.endswith('.png')):
+        continue
+
     test_image = './pictures/{}'.format(filename)
     oriImg = cv2.imread(test_image) # B,G,R order
     shape_dst = np.min(oriImg.shape[0:2])
@@ -60,5 +62,7 @@ for filename in os.listdir('pictures'):
     humans = paf_to_pose_cpp(heatmap, paf, cfg)
             
     out = draw_humans(oriImg, humans)
-    cv2.imwrite('results/result-{}'.format(filename),out)   
+    outRaw = draw_humans(np.zeros_like(oriImg), humans)
+    cv2.imwrite('results/result-{}'.format(filename), out)   
+    cv2.imwrite('results-raw/result-{}'.format(filename), outRaw)
 

@@ -53,8 +53,6 @@ Temporary Items
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
 
-pictures/*
-results/*
 .vscode/
 lib/pafprocess/pafprocess_wrap.cpp
 lib/pafprocess/pafprocess_wrap.cxx
