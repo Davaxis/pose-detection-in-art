@@ -25,6 +25,8 @@ from lib.utils.common import Human, BodyPart, CocoPart, CocoColors, CocoPairsRen
 from lib.utils.paf_to_pose import paf_to_pose_cpp
 from lib.config import cfg, update_config
 
+import json
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--cfg', help='experiment configure file name',
                     default='./experiments/vgg19_368x368_sgd.yaml', type=str)
@@ -60,9 +62,13 @@ for filename in os.listdir('pictures'):
         paf, heatmap, im_scale = get_outputs(oriImg, model,  'rtpose')
             
     humans = paf_to_pose_cpp(heatmap, paf, cfg)
+
+    info = {'amount': len(humans)}
             
     out = draw_humans(oriImg, humans)
     outRaw = draw_humans(np.zeros_like(oriImg), humans)
     cv2.imwrite('results/result-{}'.format(filename), out)   
     cv2.imwrite('results-raw/result-{}'.format(filename), outRaw)
+    with open('results-raw/info-{}.json'.format(filename), 'w') as outfile:
+        json.dump(info, outfile)
 
