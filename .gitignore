@@ -57,3 +57,4 @@ Temporary Items
 lib/pafprocess/pafprocess_wrap.cpp
 lib/pafprocess/pafprocess_wrap.cxx
 lib/pafprocess/pafprocess.py
+__pycache__/
