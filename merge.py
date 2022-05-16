@@ -38,7 +38,7 @@ def main(save_to):
 
   # normalization
   merged_norm = np.zeros(np.shape(merged))
-  merged = cv2.normalize(merged, merged_norm, alpha=0, beta=100, cv2.NORM_MINMAX)
+  merged = cv2.normalize(merged, merged_norm, 0, 255, cv2.NORM_MINMAX)
   # coeficient = 255 / np.max(merged)
   # merged *= coeficient
 
@@ -48,7 +48,7 @@ def main(save_to):
   merged = cv2.erode(merged, np.ones((25, 25), np.uint8), iterations=2)
 
   plt.imshow(merged)
-  plt.savefig('merged/{}.jpg'.format(save_to))
+  plt.savefig('merged/{}.png'.format(save_to))
 
 
 if __name__ == '__main__':
