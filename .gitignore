@@ -4,6 +4,9 @@ data/*
 *.o
 *.so
 
+results/*
+results-raw/*
+
 .ipynb_checkpoints
 notebooks/*.pkl
 
