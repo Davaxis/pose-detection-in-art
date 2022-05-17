@@ -85,11 +85,10 @@ def get_outputs(img, model, preprocess):
     :returns: numpy arrays, the averaged paf and heatmap
     """
     inp_size = cfg.DATASET.IMAGE_SIZE
-
+    print(np.shape(img))
     # padding
     im_croped, im_scale, real_shape = im_transform.crop_with_factor(
         img, inp_size, factor=cfg.MODEL.DOWNSAMPLE, is_ceil=True)
-
     if preprocess == 'rtpose':
         im_data = rtpose_preprocess(im_croped)
 

@@ -7,16 +7,25 @@ from matplotlib import pyplot as plt
 import os
 import extract
 
-def main(save_to):
+def main():
+  for folder in os.listdir('results-raw'):
+    if os.path.isdir('results-raw/' + folder) and any(f.endswith(".jpg") or f.endswith(".png") for f in os.listdir('results-raw/' + folder)):
+      print("merging {}".format(folder))
+      compute_merged('results-raw/' + folder)
+
+def remove_computed(path):
+  for filename in os.listdir(path):
+    if filename.endswith(".png") or filename.endswith(".jpg"):
+      os.remove('{}/{}'.format(path, filename))
+
+def compute_merged(path):
   raw_images = []
   extracted_images = []
-  # counter = []
-
-  for filename in os.listdir('results-raw'):
+  for filename in os.listdir(path):
     if not (filename.endswith('.jpg') or filename.endswith('.png')):
         continue
     
-    raw_images.append(cv2.imread('results-raw/{}'.format(filename)))
+    raw_images.append(cv2.imread('{}/{}'.format(path, filename)))
     # info = json.load(open('results-raw/{}.json'.format(filename.replace('result', 'info'))))
     # counter.append(info['amount'])
 
@@ -33,10 +42,10 @@ def main(save_to):
     merged = np.add(padded, merged)
 
   # add gaussian blur
-  gauss_size = int(min(np.shape(merged)[:2]) * 0.08)
+  gauss_size = int(min(np.shape(merged)[:2]) * 0.05)
   if gauss_size % 2 == 0:
     gauss_size += 1
-  img = cv2.GaussianBlur(img, (gauss_size, gauss_size), 150)
+  img = cv2.GaussianBlur(img, (gauss_size, gauss_size), 0)
 
   # normalization
   merged_norm = np.zeros(np.shape(merged))
@@ -44,17 +53,13 @@ def main(save_to):
 
   # closing
   merged = np.round(merged_norm, 0).astype(np.uint8)
-  merged = cv2.dilate(merged, np.ones((25, 25), np.uint8))
-  merged = cv2.erode(merged, np.ones((25, 25), np.uint8), iterations=2)
+  merged = cv2.dilate(merged, np.ones((10, 10), np.uint8))
+  merged = cv2.erode(merged, np.ones((10, 10), np.uint8), iterations=2)
 
   plt.imshow(merged)
-  plt.savefig('merged/{}.png'.format(save_to))
+  plt.savefig('{}/merged.png'.format(path))
 
 
 if __name__ == '__main__':
-  if len(sys.argv) < 2:
-    print('Usage: python3 merge.py <save_to>')
-    print('<save_to> is filename of the picture that the script produces without extension')
-    sys.exit(1)
-  main(sys.argv[1])
+  main()
 
