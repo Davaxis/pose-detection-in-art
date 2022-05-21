@@ -49,16 +49,16 @@ model.float()
 model.eval()
 
 print('Pose estimation...')
-for folder in os.listdir('wikiart'):
-    if os.path.isdir('wikiart/' + folder):
+for folder in sorted(os.listdir('pictures')):
+    if os.path.isdir('pictures/' + folder):
         # merge.remove_computed('results/' + folder)
         # merge.remove_computed('results-raw/' + folder)
         print(folder)
-        for filename in os.listdir('wikiart/' + folder):
+        for filename in os.listdir('pictures/' + folder):
             if not (filename.endswith('.jpg') or filename.endswith('.png')):
                 continue
 
-            test_image = 'wikiart/{}/{}'.format(folder, filename)
+            test_image = 'pictures/{}/{}'.format(folder, filename)
             oriImg = cv2.imread(test_image)  # B,G,R order
             shape_dst = np.min(oriImg.shape[0:2])
 
@@ -72,10 +72,17 @@ for folder in os.listdir('wikiart'):
             out = draw_humans(oriImg, humans)
             outRaw = draw_humans(np.zeros_like(oriImg), humans)
 
-            cv2.imwrite('./results/{}/{}'.format(folder, filename), out)
-            cv2.imwrite('./results-raw/{}/{}'.format(folder, filename), outRaw)
+            # crete folder if not exist
+            if not os.path.exists('results/' + folder):
+                os.makedirs('results/' + folder)
+            if not os.path.exists('results-raw/' + folder):
+                os.makedirs('results-raw/' + folder)
+            
+            # save image
+            cv2.imwrite('results/' + folder + '/' + filename, out)
+            cv2.imwrite('results-raw/' + folder + '/' + filename, outRaw)
             # with open('results-info/{}/info-{}.json'.format(folder, filename[:-4]), 'w') as outfile:
             #     json.dump(info, outfile)
 
 
-merge.main()
+# merge.main()

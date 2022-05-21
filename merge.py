@@ -8,10 +8,15 @@ import os
 import extract
 
 def main():
-  for folder in os.listdir('results-raw'):
+  for folder in sorted(os.listdir('results-raw')):
     if os.path.isdir('results-raw/' + folder) and any(f.endswith(".jpg") or f.endswith(".png") for f in os.listdir('results-raw/' + folder)):
       print("merging {}".format(folder))
-      compute_merged('results-raw/' + folder)
+      best_file: str = compute_merged('results-raw/' + folder)
+      if not best_file.startswith('BEST'):
+        os.rename('results-raw/{}/{}'.format(folder, best_file), 'results-raw/{}/BEST-{}'.format(folder, best_file))
+        os.rename('results/{}/{}'.format(folder, best_file), 'results/{}/BEST-{}'.format(folder, best_file))
+
+
 
 def remove_computed(path):
   for filename in os.listdir(path):
@@ -25,20 +30,23 @@ def compute_merged(path):
     if not (filename.endswith('.jpg') or filename.endswith('.png')):
         continue
     
-    raw_images.append(cv2.imread('{}/{}'.format(path, filename)))
+    raw_images.append([cv2.imread('{}/{}'.format(path, filename)), filename])
     # info = json.load(open('results-raw/{}.json'.format(filename.replace('result', 'info'))))
     # counter.append(info['amount'])
 
-  for image in raw_images:
-    extracted_images.extend(extract.main(image))
+  for image, filename in raw_images:
+    extracted = extract.main(image)
+    for image in extracted:
+      extracted_images.append([image, filename])
 
-  maxW = max(map(lambda item: np.shape(item)[0], extracted_images))
-  maxH = max(map(lambda item: np.shape(item)[1], extracted_images))
+  maxW = max(map(lambda item: np.shape(item[0])[0], extracted_images))
+  maxH = max(map(lambda item: np.shape(item[0])[1], extracted_images))
 
   merged = np.zeros((maxW, maxH, 3))
   
   del_index = []
-  for index, img in enumerate(extracted_images):
+  for index, tup in enumerate(extracted_images):
+    img, filename = tup
     if img.shape[0] < maxW/4 or img.shape[1] < maxH/4:
       del_index.append(index)
     else:
@@ -63,7 +71,8 @@ def compute_merged(path):
   # get most similar image
   best_image = None
   best_score = 0
-  for img in extracted_images:
+  best_file = None
+  for img, filename in extracted_images:
     img = cv2.resize(img, dsize=(np.shape(mask)[1], np.shape(mask)[0]))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -71,6 +80,7 @@ def compute_merged(path):
     if score > best_score:
       best_score = score
       best_image = img
+      best_file = filename
 
   # add gaussian blur
   gauss_size = int(min(np.shape(merged)[:2]) * 0.05)
@@ -86,6 +96,8 @@ def compute_merged(path):
   plt.savefig('{}/best.png'.format(path))
   plt.imshow(merged_norm)
   plt.savefig('{}/merged.png'.format(path))
+
+  return best_file
 
 
 if __name__ == '__main__':
