@@ -6,6 +6,8 @@ data/*
 
 results/*
 results-raw/*
+wikiart/*
+res/*
 
 .ipynb_checkpoints
 notebooks/*.pkl
