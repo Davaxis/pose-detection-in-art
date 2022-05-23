@@ -146,8 +146,7 @@ def compute_merged(path):
 def main():
     for period in sorted(os.listdir('results-raw')):
         for p in sorted(os.listdir('results-raw/{}'.format(period))):
-            # if os.path.isdir('results-raw/{}/{}'.format(period, p)) and any(f.endswith(".jpg") or f.endswith(".png") for f in os.listdir('results-raw/{}/{}'.format(period, p))):
-            if os.path.isdir('results-raw/{}/{}'.format(period, p)) and os.listdir('results-raw/{}/{}'.format(period, p)):
+            if os.path.isdir('results-raw/{}/{}'.format(period, p)) and any(f.endswith(".jpg") or f.endswith(".png") for f in os.listdir('results-raw/{}/{}'.format(period, p))):
                 print("merging {} | {}".format(period, p))
                 best_file: str = compute_merged('results-raw/{}/{}'.format(period, p))
                 if not best_file.startswith('BEST'):

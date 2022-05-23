@@ -118,7 +118,7 @@ def write_to_folder_by_pose(human, img_shape, img, img_raw, period, filename):
     elif ix == 2:
         pose = 'standing'
 
-    # cv2.imwrite('results/{}/{}/{}'.format(period, pose, filename), img_cp)
+    cv2.imwrite('results/{}/{}/{}'.format(period, pose, filename), img_cp)
     cv2.imwrite('results-raw/{}/{}/{}'.format(period,
                 pose, filename), img_cp_raw)
 
